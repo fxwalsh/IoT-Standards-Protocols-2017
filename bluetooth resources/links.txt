@@ -1,0 +1,6 @@
+http://www.wadewegner.com/2014/05/create-an-ibeacon-transmitter-with-the-raspberry-pi/
+
+https://learn.adafruit.com/pibeacon-ibeacon-with-a-raspberry-pi/
+
+
+

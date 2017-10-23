@@ -1,0 +1,72 @@
+#Bluetooth Low Energy 
+## Raspberry Pi as a Beacon
+
+Beacons are one-way transmitters that are used to mark important places and objects. Standards are emerging in the beacon space, including Apple's iBeacon and Google's Eddystone beacon platform. 
+A beacon is detectable to a user's device from a range of a few meters, using Bluetooth Low Energy to provide contextual information to devices and applications. 
+In this lab we will use a Raspberry Pi to create a beacon. 
+
+### Equipment:
+
+- Raspberry Pi 3
+- SD card with a reasonably current version of Raspbian
+- Mobile phone with internet access
+
+### Raspbian
+Put the current stable version of Raspbian on a SSD card
+
+### Configure Raspberry Pi for Headless 
+
+We're using the Pi as a beacon so we do not need to access the user interface - we can do what we need using Secure Socket Shell (SSH). It would also be handy if we could connect directly to the pi from a laptop.
+Check out this tutorial for doing just that: 
+
+[Dexter Labs Tutorial](https://www.dexterindustries.com/howto/connecting-raspberry-pi-without-monitor-beginners/)
+
+
+### Set up Beacon
+
+You can use hciconfig and hcitool to configure Bluetooth devices. We will create the following to make the pi act as a beacon:
+- A start script
+- A stop script
+- A config file
+
+- On your pi create the directory  `/home/pi/beacon`
+- In `/home/pi/beacon`, create a file called `beacon.conf` and add the following contents:
+
+```script
+#BLE beacon configuration
+export BLUETOOTH_DEVICE=hci0
+export UUID="e2 c5 6d b5 df fb 48 d2 b0 60 d0 f5 a7 10 96 e0"
+export MAJOR="00 16"
+export MINOR="00 08"
+export POWER="c5"
+```
+
+- In the same folder, create a file called `beacon_start` with the following contents
+```
+#!/bin/sh
+. ./ibeacon.conf
+echo "Launching virtual iBeacon..."
+sudo hciconfig $BLUETOOTH_DEVICE up
+sudo hciconfig $BLUETOOTH_DEVICE noleadv
+sudo hciconfig $BLUETOOTH_DEVICE leadv 0
+sudo hcitool -i hci0 cmd 0x08 0x0008 1e 02 01 1a 1a ff 4c 00 02 15 $UUID $MAJOR $MINOR $POWER 00
+echo "Complete"
+```
+
+- In the same folder, create a file called `beacon_stop` with the following contents
+
+```
+#!/bin/sh
+. ./ibeacon.conf
+echo "Disabling virtual iBeacon..."
+sudo hciconfig $BLUETOOTH_DEVICE noleadv
+echo "Complete"
+```
+
+### Turn the beacon on
+- Run the start script as sudo and you should see the beacon. Using your smart phone, download a free beacon locator. You should see the beacon and an indication of it's proximity.
+
+
+### Start as a Service
+You will want the beacon to start when you reboot the pi. 
+
