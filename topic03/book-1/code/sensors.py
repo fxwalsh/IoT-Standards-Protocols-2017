@@ -38,15 +38,13 @@ print(si.temperature())
 
 print(si.humidity())
 
-print(lt.light())
+print(lt.light()[0])
 
 print(li.acceleration())
 
 print(li.roll())
 
 print(li.pitch())
-
-print(li.yaw())
 
 
 
